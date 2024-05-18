@@ -1,26 +1,58 @@
 syntax = "proto3";
+
 package kiichain.kiichain;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "kiichain/kiichain/params.proto";
+import "kiichain/kiichain/tile.proto";
 
 option go_package = "kiichain/x/kiichain/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  
   // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/kiichain/kiichain/params";
+  
+  }
+  
+  // Queries a list of Tile items.
+  rpc Tile    (QueryGetTileRequest) returns (QueryGetTileResponse) {
+    option (google.api.http).get = "/kiichain/kiichain/tile/{id}";
+  
+  }
+  rpc TileAll (QueryAllTileRequest) returns (QueryAllTileResponse) {
+    option (google.api.http).get = "/kiichain/kiichain/tile";
+  
   }
 }
-
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
+  
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
 }
+
+message QueryGetTileRequest {
+  uint64 id = 1;
+}
+
+message QueryGetTileResponse {
+  Tile Tile = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllTileRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTileResponse {
+  repeated Tile                                   Tile       = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+

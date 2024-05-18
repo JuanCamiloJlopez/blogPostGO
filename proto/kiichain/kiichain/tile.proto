@@ -1,0 +1,10 @@
+syntax = "proto3";
+package kiichain.kiichain;
+
+option go_package = "kiichain/x/kiichain/types";
+
+message Tile {
+  uint64 id = 1;
+  string body = 2; 
+  string creator = 3;
+}

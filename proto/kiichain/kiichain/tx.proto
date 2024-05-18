@@ -1,7 +1,38 @@
 syntax = "proto3";
+
 package kiichain.kiichain;
+
+import "kiichain/kiichain/tile.proto";
 
 option go_package = "kiichain/x/kiichain/types";
 
 // Msg defines the Msg service.
-service Msg {}
+service Msg {
+  rpc CreateTile (MsgCreateTile) returns (MsgCreateTileResponse);
+  rpc UpdateTile (MsgUpdateTile) returns (MsgUpdateTileResponse);
+  rpc DeleteTile (MsgDeleteTile) returns (MsgDeleteTileResponse);
+}
+message MsgCreateTile {
+  string creator = 1;
+  string body    = 2;
+}
+
+message MsgCreateTileResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateTile {
+  string creator = 1;
+  uint64 id      = 2;
+  string body    = 3;
+}
+
+message MsgUpdateTileResponse {}
+
+message MsgDeleteTile {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteTileResponse {}
+

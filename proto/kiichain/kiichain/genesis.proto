@@ -1,12 +1,17 @@
 syntax = "proto3";
+
 package kiichain.kiichain;
 
 import "gogoproto/gogo.proto";
 import "kiichain/kiichain/params.proto";
+import "kiichain/kiichain/tile.proto";
 
 option go_package = "kiichain/x/kiichain/types";
 
 // GenesisState defines the kiichain module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+           Params params    = 1 [(gogoproto.nullable) = false];
+  repeated Tile   tileList  = 2 [(gogoproto.nullable) = false];
+           uint64 tileCount = 3;
 }
+

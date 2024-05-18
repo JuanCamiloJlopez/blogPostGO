@@ -23,7 +23,19 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgCreateTile = "op_weight_msg_tile"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateTile int = 100
+
+	opWeightMsgUpdateTile = "op_weight_msg_tile"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateTile int = 100
+
+	opWeightMsgDeleteTile = "op_weight_msg_tile"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteTile int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -34,6 +46,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	kiichainGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
+		TileList: []types.Tile{
+			{
+				Id:      0,
+				Creator: sample.AccAddress(),
+			},
+			{
+				Id:      1,
+				Creator: sample.AccAddress(),
+			},
+		},
+		TileCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&kiichainGenesis)
@@ -51,6 +74,39 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
+	var weightMsgCreateTile int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateTile, &weightMsgCreateTile, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateTile = defaultWeightMsgCreateTile
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateTile,
+		kiichainsimulation.SimulateMsgCreateTile(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateTile int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateTile, &weightMsgUpdateTile, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateTile = defaultWeightMsgUpdateTile
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateTile,
+		kiichainsimulation.SimulateMsgUpdateTile(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteTile int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteTile, &weightMsgDeleteTile, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteTile = defaultWeightMsgDeleteTile
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteTile,
+		kiichainsimulation.SimulateMsgDeleteTile(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -59,6 +115,30 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return []simtypes.WeightedProposalMsg{
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgCreateTile,
+			defaultWeightMsgCreateTile,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				kiichainsimulation.SimulateMsgCreateTile(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateTile,
+			defaultWeightMsgUpdateTile,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				kiichainsimulation.SimulateMsgUpdateTile(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgDeleteTile,
+			defaultWeightMsgDeleteTile,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				kiichainsimulation.SimulateMsgDeleteTile(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
 		// this line is used by starport scaffolding # simapp/module/OpMsg
 	}
 }
